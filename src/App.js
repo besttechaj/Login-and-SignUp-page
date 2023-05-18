@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './components/Home/Home';
+import Login from './components/Login/Login';
+import Signup from './components/Signup/Signup';
+import { auth } from './firebase';
+const App = () => {
+  const [username, setUserName] = useState('');
 
-function App() {
+  //after user is registered or logged -in redirection him to the index page
+  //if user is logged-in then display his name on home page else don't display
+  useEffect(() => {
+    //whenever user is logged -in
+    auth.onAuthStateChanged((user) => {
+      console.log(user);
+      //if user is logged-in
+      if (user) {
+        setUserName(user.displayName);
+      } else {
+        setUserName(''); //user is logged out
+      }
+    });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path='/' element={<Home name={username} />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/signup' element={<Signup />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
